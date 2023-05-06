@@ -8,7 +8,6 @@
  * 
  */
 
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -22,17 +21,16 @@ class RecommendedProducts extends Module
         $this->author = 'Natalio Rabasco';
         $this->version = '1.0.0';
         $this->need_instance = 0;
+        $this->bootstrap = true;
         $this->ps_versions_compliancy = [
             'min' => '1.7.1.0',
             'max' => _PS_VERSION_,
         ];
-        $this->bootstrap = true;
 
         parent::__construct();
 
         $this->displayName = $this->l('Recommended products');
         $this->description = $this->l('Show featured products on the home page of your online store');
-
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
     }
 
@@ -40,7 +38,9 @@ class RecommendedProducts extends Module
     {
         $this->_clearCache('*');
 
-        return parent::install() && $this->registerHook('displayHome') && $this->registerHook('displayRecommendedProducts');
+        return parent::install()
+            && $this->registerHook('displayHome')
+            && $this->registerHook('displayRecommendedProducts');
     }
 
     public function uninstall()
@@ -116,6 +116,7 @@ class RecommendedProducts extends Module
                             'id' => 'id',
                             'name' => 'name'
                         ),
+                        'class' => 'w-full',
                         'multiple' => true,
                         'desc' => $this->l('Select the products you want to display on the home page.'),
                         'size' => 10,
@@ -135,24 +136,17 @@ class RecommendedProducts extends Module
 
     public function processMyDelete()
     {
-        // Obtenga el ID del producto a eliminar
         $id_product = (int) Tools::getValue('id_product');
-
-        // Obtenga la lista de productos seleccionados del valor de configuración
         $selectedProducts = Configuration::get('RECOMMENDEDPRODUCTS');
         $selectedProducts = explode(',', $selectedProducts);
-
-        // Encuentre el índice del producto a eliminar
         $index = array_search($id_product, $selectedProducts);
+
         if ($index !== false) {
-            // Elimine el producto de la lista de productos seleccionados
             unset($selectedProducts[$index]);
 
-            // Guarde la lista actualizada de productos seleccionados
             Configuration::updateValue('RECOMMENDEDPRODUCTS', implode(',', $selectedProducts));
         }
 
-        // Redirigir a la página de configuración del módulo
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
 
@@ -174,27 +168,17 @@ class RecommendedProducts extends Module
             'delete_link' => array(
                 'title' => $this->l('Delete'),
                 'align' => 'right',
-                'class' => 'fixed-width-sm',
+                'class' => 'fixed-width-md',
                 'type' => 'bool',
-                'float' => true, // a trick - prevents from html escaping
-                'orderby' => false,
-                'search' => false,
+                'float' => true,
+                //'orderby' => false,
+                //'search' => false,
             ),
-
         );
 
         $helper = new HelperList();
         $helper->shopLinkType = '';
         $helper->simple_header = true;
-        // $helper->actions = array('deleteProduct');
-        // $helper->actions = array(
-        //     'delete' => array(
-        //         'text' => $this->l('Delete'),
-        //         'confirm' => $this->l('Are you sure you want to delete the selected items?'),
-        //         'icon' => 'icon-trash',
-        //         'callback' => array('delete_product'),
-        //     )
-        // );
         $helper->identifier = 'id_product';
         $helper->table = 'product';
         $helper->token = Tools::getAdminTokenLite('AdminModules');
@@ -205,17 +189,14 @@ class RecommendedProducts extends Module
 
         foreach ($products as $product) {
             if (in_array($product['id_product'], $selectedProducts)) {
-                // $deleteUrl = $this->context->link->getAdminLink('AdminModuleName', true) . '&id_product=' . $product['id_product'] . '&delete_product';
-                // $deleteButton = '<a href="' . $deleteUrl . '" class="delete-button">' . $this->l('Delete') . '</a>';
-
                 $delete_link = $this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&delete_product=' . $product['id_product'] . '&token=' . Tools::getAdminTokenLite('AdminModules');
-                $deleteButton = '<a href="' . $delete_link . '">Delete</a>';
-
+                $deleteButton = '<a href="' . $delete_link . '" class="btn btn-default"><i class="icon-trash"></i>&nbsp;Delete</a>';
+                $price = $product['price'];
 
                 $productOptions[] = array(
                     'id_product' => $product['id_product'],
                     'name' => $product['name'],
-                    'price' => $product['price'],
+                    'price' => $this->printPrice($price, 'price') . '€',
                     'delete_link' => $deleteButton,
                 );
             }
@@ -223,41 +204,32 @@ class RecommendedProducts extends Module
 
         if (Tools::isSubmit('delete_product')) {
             $this->processDeleteProduct();
-            // Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
         }
 
         $helper->listTotal = count($productOptions);
         $helper->_pagination = array(20, 50, 100, 300);
-        // $helper->bulk_actions = array(
-        //     'delete' => array(
-        //         'text' => $this->l('Delete selected'),
-        //         'confirm' => $this->l('Are you sure you want to delete the selected items?'),
-        //         'icon' => 'icon-trash',
-        //     )
-        // );
 
         return $helper->generateList($productOptions, $fields_list);
     }
 
+    protected function printPrice($value, $row)
+    {
+        return number_format((float)$value, 2, ',', '');
+    }
+
     public function processDeleteProduct()
     {
-        // Obtenga el ID del producto a eliminar
         $id_product = (int) Tools::getValue('delete_product');
-
-        // Obtenga la lista de productos seleccionados del valor de configuración
         $selectedProducts = Configuration::get('RECOMMENDEDPRODUCTS');
-
         $selectedProducts = explode(',', $selectedProducts);
-
-        // Encuentre el índice del producto a eliminar
         $index = array_search($id_product, $selectedProducts);
+
         if ($index !== false) {
-            // Elimine el producto de la lista de productos seleccionados
             unset($selectedProducts[$index]);
 
-            // Guarde la lista actualizada de productos seleccionados
             Configuration::updateValue('RECOMMENDEDPRODUCTS', implode(',', $selectedProducts));
         }
+
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
 
@@ -269,6 +241,7 @@ class RecommendedProducts extends Module
 
         foreach ($productIds as $productId) {
             $product = new Product($productId);
+
             if (Validate::isLoadedObject($product)) {
                 $products[] = $product;
             }
@@ -278,7 +251,6 @@ class RecommendedProducts extends Module
             'products' => $products,
         ));
 
-        //var_dump($products);
         return $this->display(__FILE__, 'recommendedproducts.tpl');
     }
 }
