@@ -27,6 +27,10 @@ If the product is removed, it will no longer appear on the list in case we stop 
 ## View in the Front-Office
 Now if you go to the main page of the store, you can see the list of recommended products. A simple view where you can see the *image of the product*, *name*, *price*, button to *add to cart* and another button to *add the product to the favorites list*.
 
+## Translations
+A `.php` file with the module translations has been implemented. E. the section of Translations of the corresponding module will be able to modify the language.
+`image`
+
 # Conclusion
 This module has been created for a technical test for the company Netenders. Made in 3 days in the best possible way.
 
