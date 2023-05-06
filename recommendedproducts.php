@@ -191,12 +191,12 @@ class RecommendedProducts extends Module
             if (in_array($product['id_product'], $selectedProducts)) {
                 $delete_link = $this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&delete_product=' . $product['id_product'] . '&token=' . Tools::getAdminTokenLite('AdminModules');
                 $deleteButton = '<a href="' . $delete_link . '" class="btn btn-default"><i class="icon-trash"></i>&nbsp;Delete</a>';
-                $price = $product['price'];
+                $price = Product::getPriceStatic($product['id_product'], true);
 
                 $productOptions[] = array(
                     'id_product' => $product['id_product'],
                     'name' => $product['name'],
-                    'price' => $this->printPrice($price, 'price') . '€',
+                    'price' => $this->printPrice($price, 'price') . ' €',
                     'delete_link' => $deleteButton,
                 );
             }
@@ -241,9 +241,26 @@ class RecommendedProducts extends Module
 
         foreach ($productIds as $productId) {
             $product = new Product($productId);
+            $image = Image::getCover($product->id);
+            $imageUrl = $this->context->link->getImageLink($product->link_rewrite, $image['id_image'], ImageType::getFormattedName('home'));
 
             if (Validate::isLoadedObject($product)) {
-                $products[] = $product;
+                $basePrice = $product->getPrice(false);
+                $offerPrice = $product->getPrice(true);
+                $products[] = array(
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description_short' => $product->description_short,
+                    'description' => $product->description,
+                    'link_rewrite' => $product->link_rewrite,
+                    'price' => $product->price,
+                    'quantity' => 1,
+                    'image' => $imageUrl,
+                    'category' => $product->category,
+                    'manufacturer' => $product->manufacturer_name,
+                    'base_price' => $basePrice,
+                    'offer_price' => $offerPrice,
+                );
             }
         }
 
@@ -251,6 +268,11 @@ class RecommendedProducts extends Module
             'products' => $products,
         ));
 
+
+        $this->context->smarty->assign('basePrice', $basePrice);
+        $this->context->smarty->assign('offerPrice', $offerPrice);
+
+        //var_dump($this->regular_price);
         return $this->display(__FILE__, 'recommendedproducts.tpl');
     }
 }

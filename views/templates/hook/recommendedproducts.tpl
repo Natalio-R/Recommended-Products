@@ -8,7 +8,7 @@
         <div class="thumbnail-container">
           <div class="thumbnail-top">
             <a href="#" class="thumbnail product-thumbnail">
-              <img src="{$product->id|cat:'-large_default/'|cat:$product->link_rewrite[1]|cat:'.jpg'}" class="card-img-top" alt="{$product->name[1]}" width="250" height="250">
+              <img src="{$product.image}" class="card-img-top" alt="{$product.name[1]}" width="250" height="250">
             </a>
             <div class="highlighted-informations no-variants">
               <a class="quick-view js-quick-view" href="#" data-link-action="quickview">
@@ -17,14 +17,14 @@
             </div>
           </div>
           <div class="product-description">
-            <h3 class="h3 product-title">
+            <h3 class="h3 product-title text-truncate">
               <a href="{$product->url}">
-                {$product->name[1]}
+                {$product.name[1]}
               </a>
             </h3>
             <div class="product-price-and-shipping">
               <span class="price" ariea-label="precio">
-                {number_format($product->price, 2, ',', '.')} €
+                {number_format($product.offer_price, 2, ',', '.')} €
               </span>
             </div>
           </div>
@@ -33,6 +33,12 @@
             <li class="product-flag {$flag}">{$flag}</li>
         {/foreach}
           </ul>
+          <form method="post" action="{$link->getPageLink('cart', true, NULL, "add=1&id_product={$product->id}&token={$token}")}" class="w-100">
+           <input type="hidden" name="token" value="{$token}" />
+            <input type="hidden" name="id_product" value="{$product.id}" />
+            <input type="hidden" name="qty" value="1" />
+            <button type="submit" class="btn btn-primary w-100">{l s='Add to cart'}</button>
+          </form>
         </div>
       </article>
     </div>
