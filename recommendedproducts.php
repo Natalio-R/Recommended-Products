@@ -156,6 +156,7 @@ class RecommendedProducts extends Module
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
 
+
     public function renderList($products)
     {
         $fields_list = array(
@@ -215,7 +216,7 @@ class RecommendedProducts extends Module
                     'id_product' => $product['id_product'],
                     'name' => $product['name'],
                     'price' => $product['price'],
-                    'delete_link' => $deleteButton
+                    'delete_link' => $deleteButton,
                 );
             }
         }
@@ -277,6 +278,7 @@ class RecommendedProducts extends Module
             'products' => $products,
         ));
 
+        //var_dump($products);
         return $this->display(__FILE__, 'recommendedproducts.tpl');
     }
 }
