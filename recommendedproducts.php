@@ -243,6 +243,7 @@ class RecommendedProducts extends Module
             $product = new Product($productId);
             $image = Image::getCover($product->id);
             $imageUrl = $this->context->link->getImageLink($product->link_rewrite, $image['id_image'], ImageType::getFormattedName('home'));
+            $productLink = $this->context->link->getProductLink($product);
 
             if (Validate::isLoadedObject($product)) {
                 $basePrice = $product->getPrice(false);
@@ -256,6 +257,7 @@ class RecommendedProducts extends Module
                     'price' => $product->price,
                     'quantity' => 1,
                     'image' => $imageUrl,
+                    'product_link' => $productLink,
                     'category' => $product->category,
                     'manufacturer' => $product->manufacturer_name,
                     'base_price' => $basePrice,

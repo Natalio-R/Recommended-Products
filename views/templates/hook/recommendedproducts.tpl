@@ -7,7 +7,7 @@
       <article class="product-miniature js-product-miniature">
         <div class="thumbnail-container">
           <div class="thumbnail-top">
-            <a href="#" class="thumbnail product-thumbnail">
+            <a href="{$product.product_link}" class="thumbnail product-thumbnail">
               <img src="{$product.image}" class="card-img-top" alt="{$product.name[1]}" width="250" height="250">
             </a>
             <div class="highlighted-informations no-variants">
@@ -18,7 +18,7 @@
           </div>
           <div class="product-description">
             <h3 class="h3 product-title text-truncate">
-              <a href="{$product->url}">
+              <a href="{$product.product_link}">
                 {$product.name[1]}
               </a>
             </h3>
