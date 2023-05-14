@@ -1,3 +1,7 @@
+{literal}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{/literal}
+
 <section class="featured-products clearfix mt-3">
 <h2 class="h2 products-section-title text-uppercase">{l s='Recommended products' d='Modules.Recommendedproducts.Shop'}</h2>
 {if $products}

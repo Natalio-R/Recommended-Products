@@ -69,11 +69,28 @@ class RecommendedProducts extends Module
             $selectedProducts = array_unique(array_merge($existingProducts, $selectedProducts));
 
             Configuration::updateValue('RECOMMENDEDPRODUCTS', implode(',', $selectedProducts));
-            $html .= $this->displayConfirmation($this->l('The selected products have been updated.'));
+            $html .= $this->displayConfirmation($this->l('The selected products have been added to the recommended products list.'));
         }
 
-        $products = Product::getProducts(Context::getContext()->language->id, 0, 0, 'name', 'ASC');
+        $searchTerm = Tools::getValue('search_term');
         $selectedProducts = explode(',', Configuration::get('RECOMMENDEDPRODUCTS'));
+        if (empty($searchTerm)) {
+            $productOptions = $this->getProductOptions('');
+        } else {
+            $productOptions = $this->getProductOptions($searchTerm);
+        }
+
+        $form = $this->generateForm($productOptions);
+        $list = $this->renderList($selectedProducts);
+        $html .= $form . $list;
+
+        return $html;
+    }
+
+
+    public function getProductOptions($searchTerm)
+    {
+        $products = Product::searchByName(Context::getContext()->language->id, $searchTerm);
 
         $productOptions = array();
         foreach ($products as $product) {
@@ -83,11 +100,7 @@ class RecommendedProducts extends Module
             );
         }
 
-        $form = $this->generateForm($productOptions);
-        $list = $this->renderList($selectedProducts);
-        $html .= $form . $list;
-
-        return $html;
+        return $productOptions;
     }
 
     protected function generateForm($productOptions)
@@ -107,6 +120,12 @@ class RecommendedProducts extends Module
                     'icon' => 'icon-cogs',
                 ),
                 'input' => array(
+                    array(
+                        'type' => 'text',
+                        'label' => $this->l('Search products'),
+                        'name' => 'search_term',
+                        'desc' => $this->l('Enter a search term to filter products.'),
+                    ),
                     array(
                         'type' => 'select',
                         'label' => $this->l('Select products'),
@@ -130,7 +149,6 @@ class RecommendedProducts extends Module
         );
 
         $helper->fields_value['recommendedproducts'] = explode(',', Configuration::get('RECOMMENDEDPRODUCTS'));
-
         return $helper->generateForm(array($fields_form));
     }
 
@@ -149,7 +167,6 @@ class RecommendedProducts extends Module
 
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
-
 
     public function renderList($products)
     {
