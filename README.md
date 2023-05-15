@@ -2,6 +2,8 @@
 
 A simple recommended products module for a PrestaShop 8.
 
+> It should be noted that this module could be optimized much better by adding an autocomplete using ajax or similar libs to the product search bar so that you don't have to search first before displaying the products. Due to the time and complexity of it, I have not been able to do it completely but with the help of a team and with time I could do it without problem. I hope you take this into account before evaluating my test. All the best.
+
 ## Facility
 
 Follow these steps to proceed with the installation of a module in PrestaShop.
@@ -53,5 +55,3 @@ A `.php` file with the module translations has been implemented. E. the section 
 # Conclusion
 
 This module has been created for a technical test for the company Netenders. Made in 3 days in the best possible way.
-
-> It should be noted that this module could be much better optimized by adding a product search bar so that a list of all products does not appear. As well as separating some module functions in a **controllers** folder, adding _CSS_ styles or effects with _JS_ saved to their respective folders, and much more.
