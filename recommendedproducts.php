@@ -14,6 +14,8 @@ if (!defined('_PS_VERSION_')) {
 
 class RecommendedProducts extends Module
 {
+    private $templateFile;
+
     public function __construct()
     {
         $this->name = 'recommendedproducts';
@@ -39,19 +41,14 @@ class RecommendedProducts extends Module
         $this->_clearCache('*');
 
         return parent::install()
-            && $this->registerHook('displayHome')
-            && $this->registerHook('displayRecommendedProducts');
+            && $this->registerHook('displayHome');
     }
 
     public function uninstall()
     {
         $this->_clearCache('*');
 
-        if (!parent::uninstall() || $this->unregisterHook('displayRecommendedProducts')) {
-            return false;
-        }
-
-        return true;
+        return parent::uninstall();
     }
 
     public function getContent()
@@ -86,7 +83,6 @@ class RecommendedProducts extends Module
 
         return $html;
     }
-
 
     public function getProductOptions($searchTerm)
     {
@@ -250,7 +246,7 @@ class RecommendedProducts extends Module
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name . '&token=' . Tools::getAdminTokenLite('AdminModules'));
     }
 
-    public function hookDisplayRecommendedProducts($params)
+    public function hookDisplayHome($params)
     {
         $selectedProducts = Configuration::get('RECOMMENDEDPRODUCTS');
         $productIds = explode(',', $selectedProducts);
