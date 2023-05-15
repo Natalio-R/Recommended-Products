@@ -32,6 +32,14 @@ We continue with the configuration of the module in question.
 
 3. Finally, the selected products will be displayed in a list where you can see the name, price and ID of the product, along with a Delete button in case you want to delete the product from the list.
 
+## How do we show the products in the Frontoffice?
+
+As soon as the module is installed, it is automatically registered in the `displayHome` hook.
+
+To move the position of the module within the hook, it is necessary to go to the positions section of PrestaShop, look for the `displayHome` hook and move the module to the position that you like best.
+
+To finish, you only have to update the Frontoffice tab and you will be able to see the changes made.
+
 ## View in the Front-Office
 
 Now if you go to the main page of the store, you can see the list of recommended products. A simple view where you can see the _image of the product_, _name_, _price_, button to _add to cart_ and another button to _add the product to the favorites list_.
